@@ -229,7 +229,7 @@ function renderPins() {
 }
 
 // ---------- Radar (RainViewer) ----------
-let frames = [], radarLayer = null, frameIdx = 0, timer = null, host = "";
+let frames = [], layers = [], frameIdx = 0, timer = null, host = "";
 
 async function initMap() {
   map = L.map("mapEl", { center: [56.5, -3.0], zoom: 9, minZoom: 7, maxZoom: 11 });
@@ -244,24 +244,33 @@ async function initMap() {
   try {
     const j = await (await fetch("https://api.rainviewer.com/public/weather-maps.json")).json();
     host = j.host; frames = j.radar.past.concat(j.radar.nowcast || []);
-    frameIdx = j.radar.past.length - 1; showFrame(frameIdx);
+    // Preload every frame as its own hidden layer so switching frames is instant.
+    layers = frames.map((f) => L.tileLayer(`${host}${f.path}/256/{z}/{x}/{y}/2/1_0.png`,
+      { opacity: 0, maxNativeZoom: 7, maxZoom: 11, zIndex: 300, keepBuffer: 4 }).addTo(map));
+    showFrame(j.radar.past.length - 1);
   } catch (e) { $("radarTime").textContent = "Radar unavailable right now."; }
   $("playBtn").onclick = togglePlay;
 }
 
 function showFrame(i) {
   const f = frames[i]; if (!f) return;
-  const layer = L.tileLayer(`${host}${f.path}/256/{z}/{x}/{y}/2/1_0.png`, { opacity: 0.6, maxNativeZoom: 7, maxZoom: 11 }).addTo(map);
-  if (radarLayer) setTimeout(() => map.removeLayer(radarLayer), 250);
-  radarLayer = layer; frameIdx = i;
+  layers.forEach((l, k) => l.setOpacity(k === i ? 0.6 : 0));
+  frameIdx = i;
   const t = new Date(f.time * 1000).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-  $("radarTime").textContent = `Radar: ${t}${f.time * 1000 > Date.now() ? " (forecast)" : ""}`;
+  $("radarTime").textContent = `Radar: ${t}${f.time * 1000 > Date.now() ? " (forecast)" : ""} · frame ${i + 1}/${frames.length}`;
 }
 
 function togglePlay() {
-  if (timer) { clearInterval(timer); timer = null; $("playBtn").textContent = "▶ Play radar"; return; }
+  if (timer) { clearTimeout(timer); timer = null; $("playBtn").textContent = "▶ Play radar"; return; }
+  if (!frames.length) return;
   $("playBtn").textContent = "⏸ Pause";
-  timer = setInterval(() => showFrame((frameIdx + 1) % frames.length), 700);
+  showFrame(0);
+  const step = () => {
+    const next = frameIdx + 1;
+    if (next >= frames.length) { timer = setTimeout(() => { showFrame(0); timer = setTimeout(step, 600); }, 1500); return; }
+    showFrame(next); timer = setTimeout(step, 600);
+  };
+  timer = setTimeout(step, 600);
 }
 
 buildPicker();
