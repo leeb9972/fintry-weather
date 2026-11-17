@@ -38,6 +38,7 @@ const wmo = (c) => WMO[c] || ["❔", "Unknown"];
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const r = (n) => Math.round(n);
+const t1 = (n) => Number(n).toFixed(1); // temperatures to one decimal place
 const compass = (d) => ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"][Math.round(d / 22.5) % 16];
 
 const API = "https://api.open-meteo.com/v1/forecast";
@@ -112,8 +113,8 @@ function renderNow(p, d) {
     <div>
       <h2>${esc(p.name)}</h2>${badge}
       <div class="big"><div class="icon">${icon}</div>
-        <div><div class="temp">${r(c.temperature_2m)}°C</div>
-        <div class="desc">${desc} · feels like ${r(c.apparent_temperature)}°C</div></div></div>
+        <div><div class="temp">${t1(c.temperature_2m)}°C</div>
+        <div class="desc">${desc} · feels like ${t1(c.apparent_temperature)}°C</div></div></div>
     </div>
     <div class="stats">
       <div class="stat"><b>${r(c.wind_speed_10m)} mph ${compass(c.wind_direction_10m)}</b><span>Wind</span></div>
@@ -150,7 +151,7 @@ function renderStorm(d) {
   else if (cape >= 500) out.push(["amber", "Convective potential", `CAPE reaches ${r(cape)} J/kg around ${when(ci)}. Showers could turn thundery.`]);
 
   const cold = Math.min(...h.temperature_2m.slice(0, n));
-  if (cold <= -5) out.push(["amber", "Hard frost", `Down to ${r(cold)}°C. Ice likely on untreated surfaces.`]);
+  if (cold <= -5) out.push(["amber", "Hard frost", `Down to ${t1(cold)}°C. Ice likely on untreated surfaces.`]);
 
   if (!out.length) out.push(["", "Nothing notable", "No strong winds, heavy rain, thunder or snow in the next 48 hours from the model data."]);
   $("stormBody").innerHTML = out.map(([lvl, t, s]) =>
@@ -167,7 +168,7 @@ function renderHourly(d) {
   for (let i = start; i < start + 24 && i < h.time.length; i++) {
     const t = h.time[i].slice(11, 16), [ic] = wmo(h.weather_code[i]);
     const pp = h.precipitation_probability[i] ?? 0;
-    html += `<div class="hr"><div class="t">${t}</div><div class="i">${ic}</div><b>${r(h.temperature_2m[i])}°</b>
+    html += `<div class="hr"><div class="t">${t}</div><div class="i">${ic}</div><b>${t1(h.temperature_2m[i])}°</b>
       <span class="bar" style="width:${Math.max(4, pp * 0.6)}%"></span><div class="rain">${pp}%</div>
       <div class="gust">${r(h.wind_gusts_10m[i])} mph</div></div>`;
   }
@@ -181,7 +182,7 @@ function renderDaily(d) {
     const day = i === 0 ? "Today" : new Date(t).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
     return `<div class="day"><div class="d">${day}</div><div class="i">${ic}</div>
       <div><div>${desc}</div><div class="m">Gusts to ${r(dl.wind_gusts_10m_max[i])} mph · ${dl.precipitation_probability_max[i] ?? 0}% rain chance</div></div>
-      <div class="r"><b>${r(dl.temperature_2m_max[i])}°</b> / ${r(dl.temperature_2m_min[i])}° · ${dl.precipitation_sum[i].toFixed(1)} mm</div></div>`;
+      <div class="r"><b>${t1(dl.temperature_2m_max[i])}°</b> / ${t1(dl.temperature_2m_min[i])}° · ${dl.precipitation_sum[i].toFixed(1)} mm</div></div>`;
   }).join("");
 }
 
@@ -206,7 +207,7 @@ function renderGlance() {
     PLACES.map((p, i) => {
       const c = overview[i]?.current; if (!c) return "";
       const [ic, desc] = wmo(c.weather_code);
-      return `<tr data-i="${i}"><td>${esc(p.name)}</td><td title="${desc}">${ic}</td><td>${r(c.temperature_2m)}°C</td>
+      return `<tr data-i="${i}"><td>${esc(p.name)}</td><td title="${desc}">${ic}</td><td>${t1(c.temperature_2m)}°C</td>
         <td>${r(c.wind_speed_10m)} mph</td><td>${r(c.wind_gusts_10m)} mph</td><td>${c.precipitation} mm</td></tr>`;
     }).join("") + "</tbody>";
   $("glance").querySelector("tbody").onclick = (e) => {
@@ -220,7 +221,7 @@ function renderPins() {
   markers.forEach((m) => m.remove()); markers = [];
   PLACES.forEach((p, i) => {
     const c = overview[i]?.current; if (!c) return;
-    const icon = L.divIcon({ className: "", html: `<div class="pin">${r(c.temperature_2m)}°</div>`, iconSize: [38, 22], iconAnchor: [19, 11] });
+    const icon = L.divIcon({ className: "", html: `<div class="pin">${t1(c.temperature_2m)}°</div>`, iconSize: [46, 22], iconAnchor: [23, 11] });
     const m = L.marker([p.lat, p.lon], { icon, title: p.name }).addTo(map);
     m.bindTooltip(`${p.name}: ${wmo(c.weather_code)[1]}, gusts ${r(c.wind_gusts_10m)} mph`);
     m.on("click", () => select(i));

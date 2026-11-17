@@ -62,7 +62,7 @@ footer{background:#07131f;margin-top:40px;padding:28px 0 40px;color:var(--mute);
 footer h2{color:var(--text);font-size:1.1rem}
 .warn{border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:#0d2335}
 .pin{background:var(--saltire);color:#fff;border:2px solid #fff;border-radius:999px;font-size:11px;font-weight:700;
-  text-align:center;line-height:20px;min-width:34px;padding:0 4px;box-shadow:0 1px 4px #0008}
+  text-align:center;line-height:20px;min-width:40px;padding:0 4px;box-shadow:0 1px 4px #0008}
 @media(max-width:700px){
   .now{grid-template-columns:1fr}
   .day{grid-template-columns:70px 30px 1fr}
