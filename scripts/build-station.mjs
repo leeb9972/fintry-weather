@@ -46,7 +46,11 @@ const convert = (v, from, to) => {
 };
 
 let data;
-try { data = JSON.parse(process.env.DATA || ""); } catch { console.error("DATA is not valid JSON"); process.exit(1); }
+try {
+  data = JSON.parse(process.env.DATA || "");
+  if (typeof data === "string") data = JSON.parse(data); // tolerate double-encoded JSON
+} catch { console.error("DATA is not valid JSON"); process.exit(1); }
+if (!data || typeof data !== "object") { console.error("DATA must be a JSON object"); process.exit(1); }
 
 const updated = new Date(data.updated);
 if (Number.isNaN(updated.getTime())) { console.error("Missing or invalid 'updated' timestamp"); process.exit(1); }
