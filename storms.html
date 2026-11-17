@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lightning &amp; Storms – Fintry Weather Station</title>
+<meta name="description" content="Lightning detection from the Fintry weather station, thunderstorm forecasts, CAPE and storm chaser ingredients for Tayside, Angus and Fife.">
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0065bd">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Lightning &amp; storms</h1>
+    <p>Live lightning detection from the Fintry station, thunderstorm forecasts from two independent models, and the ingredients storm chasers look for.</p>
+    <div class="picker" id="picker" role="tablist" aria-label="Choose a location for the forecast"></div>
+  </section>
+
+  <section id="verdict" class="card" aria-live="polite"><div class="loading">Loading storm forecast…</div></section>
+
+  <section class="card">
+    <h2>Fintry lightning sensor <span class="sub">live from the station</span></h2>
+    <div id="stationBody" class="stats grid4"></div>
+    <div id="stationNote" class="sub"></div>
+  </section>
+
+  <section class="card">
+    <h2>Storm ingredients <span class="sub" id="siteInfo"></span></h2>
+    <div class="stats grid4" id="ingredients"></div>
+  </section>
+
+  <section class="card">
+    <h2>Next 48 hours: thunder <span class="sub">MET Norway</span></h2>
+    <div id="thunderChart" class="chart"></div>
+    <div class="legend">
+      <span><i class="k-thunder"></i>Thunder forecast</span><span><i class="k-rain"></i>Rain</span><span><i class="k-snow"></i>Snow</span><span><i class="k-sleet"></i>Sleet</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Next 48 hours: CAPE (storm energy) <span class="sub">Open-Meteo</span></h2>
+    <div id="capeChart" class="chart"></div>
+    <div class="legend"><span><i class="k-cape1"></i>Under 300 J/kg</span><span><i class="k-cape2"></i>300 to 1000</span><span><i class="k-cape3"></i>1000+</span>
+      <span class="sub">CAPE measures how much energy is available for thunderstorms to develop</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Next 48 hours: wind gusts</h2>
+    <div id="gustChart" class="chart"></div>
+    <div class="legend"><span><i class="k-cape1"></i>Under 40 mph</span><span><i class="k-cape2"></i>40 to 60 mph</span><span><i class="k-cape3"></i>60+ mph</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Storm chaser table</h2>
+    <p class="sub">Three-hourly. Shear is a rough estimate of wind change between the surface and about 5.5 km up. Storms organise better with stronger shear.</p>
+    <div class="tablewrap"><table id="chaser"></table></div>
+  </section>
+
+  <section class="card">
+    <h2>Lightning safety</h2>
+    <ul class="links">
+      <li>Count the seconds between the flash and the thunder. Divide by 5 for miles (or by 3 for kilometres). Under 30 seconds means the storm is close enough to be dangerous.</li>
+      <li>Go indoors or into a hard-topped vehicle. Stay away from open ground, hilltops, single trees, water and metal fences.</li>
+      <li>Wait 30 minutes after the last thunder before going back outside.</li>
+      <li>Unplug sensitive electronics if a storm is overhead.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Live lightning maps &amp; warnings</h2>
+    <ul class="links">
+      <li><a href="https://map.blitzortung.org/#8/56.48/-2.92">Blitzortung live lightning map</a> (community network), centred on Fintry</li>
+      <li><a href="https://www.lightningmaps.org/#m=oss;t=3;s=0;o=0;b=0.00;ts=0;y=56.48;x=-2.92;z=8;d=2;dl=2;dc=0;">LightningMaps.org</a>: live strikes</li>
+      <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/uk-warnings">Met Office thunderstorm warnings</a></li>
+      <li><a href="index.html#map">Rain radar on this site</a></li>
+    </ul>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script src="storms.js"></script>
+</body>
+</html>

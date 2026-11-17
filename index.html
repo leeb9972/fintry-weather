@@ -17,21 +17,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
-<header class="top">
-  <div class="wrap bar">
-    <a class="brand" href="#">
-      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 3 L21 21 M21 3 L3 21" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>
-      Fintry Weather Station
-    </a>
-    <nav>
-      <a href="#now">Now</a>
-      <a href="#storm">Storm watch</a>
-      <a href="#map">Radar map</a>
-      <a href="#week">7 days</a>
-      <a href="#sources">Data sources</a>
-    </nav>
-  </div>
-</header>
+<div id="site-header"></div>
 
 <main class="wrap">
   <section class="hero">
@@ -74,17 +60,10 @@
   </section>
 </main>
 
-<footer id="sources">
-  <div class="wrap">
-    <h2>Data sources &amp; licences</h2>
-    <p>Fintry Weather Station is a distributor of weather information, powered by data used under open licences. Forecast data is provided by <a href="https://open-meteo.com/">Open-Meteo.com</a> under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, which combines national weather service models including those of the Danish Meteorological Institute (DMI), the Met Office and NOAA. Rain radar imagery is provided by <a href="https://www.rainviewer.com/">RainViewer</a>. Basemap © Esri, HERE, Garmin and <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
-    <p>This data has been processed and changed by Fintry Weather Station; no endorsement by Open-Meteo, DMI, the Met Office, NOAA or RainViewer is implied. We process this information in a way that is useful to storm chasers, everyday users and severe weather watchers.</p>
-    <p>Current conditions for Fintry are measured by our own Ecowitt weather station when it is online. Forecasts, and conditions at other places, are computer model output.</p>
-    <p class="warn"><strong>Not an official warning service.</strong> For official severe weather warnings see the <a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/uk-warnings">Met Office warnings</a> and <a href="https://www.sepa.org.uk/environment/water/flooding/">SEPA flood alerts</a>. In an emergency call 999. Hill and mountain forecasts: <a href="https://www.mwis.org.uk/">MWIS</a>.</p>
-  </div>
-</footer>
+<div id="site-footer"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="common.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

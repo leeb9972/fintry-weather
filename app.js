@@ -1,62 +1,7 @@
 "use strict";
 
-const PLACES = [
-  { name: "Fintry, Dundee", lat: 56.482, lon: -2.918 },
-  { name: "Dundee centre", lat: 56.462, lon: -2.9707 },
-  { name: "Broughty Ferry", lat: 56.466, lon: -2.87 },
-  { name: "Tayport", lat: 56.448, lon: -2.883 },
-  { name: "Carnoustie", lat: 56.5014, lon: -2.7099 },
-  { name: "Arbroath", lat: 56.559, lon: -2.585 },
-  { name: "Montrose", lat: 56.708, lon: -2.468 },
-  { name: "Brechin", lat: 56.731, lon: -2.659 },
-  { name: "Forfar", lat: 56.643, lon: -2.888 },
-  { name: "Kirriemuir", lat: 56.67, lon: -3.005 },
-  { name: "Glen Clova", lat: 56.8333, lon: -3.0833 },
-  { name: "Blairgowrie", lat: 56.59, lon: -3.338 },
-  { name: "Pitlochry", lat: 56.704, lon: -3.736 },
-  { name: "Perth", lat: 56.395, lon: -3.4308 },
-  { name: "St Andrews", lat: 56.3398, lon: -2.7967 },
-  { name: "Cupar", lat: 56.319, lon: -3.01 },
-  { name: "Glenrothes", lat: 56.195, lon: -3.178 },
-  { name: "Kirkcaldy", lat: 56.11, lon: -3.16 },
-  { name: "Dunfermline", lat: 56.0717, lon: -3.4393 },
-];
-
-const WMO = {
-  0: ["☀️", "Clear sky"], 1: ["🌤️", "Mainly clear"], 2: ["⛅", "Partly cloudy"], 3: ["☁️", "Overcast"],
-  45: ["🌫️", "Fog"], 48: ["🌫️", "Freezing fog"],
-  51: ["🌦️", "Light drizzle"], 53: ["🌦️", "Drizzle"], 55: ["🌧️", "Heavy drizzle"],
-  56: ["🌧️", "Freezing drizzle"], 57: ["🌧️", "Freezing drizzle"],
-  61: ["🌦️", "Light rain"], 63: ["🌧️", "Rain"], 65: ["🌧️", "Heavy rain"],
-  66: ["🌧️", "Freezing rain"], 67: ["🌧️", "Freezing rain"],
-  71: ["🌨️", "Light snow"], 73: ["🌨️", "Snow"], 75: ["❄️", "Heavy snow"], 77: ["🌨️", "Snow grains"],
-  80: ["🌦️", "Light showers"], 81: ["🌧️", "Showers"], 82: ["🌧️", "Violent showers"],
-  85: ["🌨️", "Snow showers"], 86: ["❄️", "Heavy snow showers"],
-  95: ["⛈️", "Thunderstorm"], 96: ["⛈️", "Thunderstorm, hail"], 99: ["⛈️", "Severe thunderstorm, hail"],
-};
-const wmo = (c) => WMO[c] || ["❔", "Unknown"];
-const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const r = (n) => Math.round(n);
-const t1 = (n) => Number(n).toFixed(1); // temperatures to one decimal place
-const compass = (d) => ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"][Math.round(d / 22.5) % 16];
-
-const API = "https://api.open-meteo.com/v1/forecast";
-const COMMON = "&wind_speed_unit=mph&timezone=Europe%2FLondon";
-
 let selected = Number(new URLSearchParams(location.search).get("p")) || 0;
 let map, markers = [], overview = [];
-let station = null; // live readings from the Fintry station (station.json)
-
-async function loadStation() {
-  try {
-    const res = await fetch("station.json?t=" + Date.now(), { cache: "no-store" });
-    if (!res.ok) throw new Error(res.status);
-    const s = await res.json();
-    const age = Date.now() - new Date(s.updated).getTime();
-    station = s.online !== false && age < 3 * 3600e3 ? s : null;
-  } catch (e) { station = null; }
-}
 const stationActive = () => station && selected === 0;
 
 function buildPicker() {
@@ -274,11 +219,9 @@ function togglePlay() {
   timer = setTimeout(step, 600);
 }
 
+renderChrome("now");
 buildPicker();
 loadPlace();
 loadOverview();
 initMap().then(renderPins);
 
-if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
-}

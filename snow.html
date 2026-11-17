@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snow &amp; Ice – Fintry Weather Station</title>
+<meta name="description" content="Snow forecast, snow level, frost and ice risk for Dundee, Angus, Fife and the Scottish hills, from two independent forecast models.">
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0065bd">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Snow &amp; ice</h1>
+    <p>Is it snowing, where is the snow level, and what's coming? Two independent forecasts (MET Norway and Open-Meteo) side by side for towns across Tayside, Angus and Fife, plus the Scottish hills.</p>
+    <div class="picker" id="picker" role="tablist" aria-label="Choose a location"></div>
+  </section>
+
+  <section id="verdict" class="card" aria-live="polite"><div class="loading">Loading snow forecast…</div></section>
+
+  <section class="card">
+    <h2>Snow at a glance <span class="sub" id="siteInfo"></span></h2>
+    <div class="stats grid4" id="snowStats"></div>
+  </section>
+
+  <section class="card">
+    <h2>Next 48 hours: what's falling <span class="sub">MET Norway</span></h2>
+    <div id="metChart" class="chart"></div>
+    <div class="legend">
+      <span><i class="k-snow"></i>Snow</span><span><i class="k-sleet"></i>Sleet</span><span><i class="k-rain"></i>Rain</span><span><i class="k-thunder"></i>Thunder</span>
+      <span class="sub">Bar height = precipitation (mm per hour)</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Next 72 hours: snowfall and snow level <span class="sub">Open-Meteo</span></h2>
+    <div id="omChart" class="chart"></div>
+    <div id="levelRow" class="levelrow"></div>
+    <div class="legend"><span><i class="k-snow"></i>Snowfall (cm per hour)</span>
+      <span class="sub">Numbers underneath: approximate snow level in metres every 6 hours</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Two forecasts compared</h2>
+    <p class="sub">Where both models agree, confidence is higher. Where they differ, treat it as uncertain and check again later.</p>
+    <div class="tablewrap"><table id="compare"></table></div>
+  </section>
+
+  <section class="card">
+    <h2>Ice &amp; frost</h2>
+    <div id="iceBody" class="storm"></div>
+  </section>
+
+  <section class="card">
+    <h2>Scottish hills</h2>
+    <p class="sub">Forecasts adjusted to summit height. Tap a hill to see it in full above.</p>
+    <div class="tablewrap"><table id="hills"></table></div>
+  </section>
+
+  <section class="card">
+    <h2>More snow &amp; ice information</h2>
+    <ul class="links">
+      <li><a href="https://www.sais.gov.uk/">Scottish Avalanche Information Service (SAIS)</a>: avalanche forecasts for the main hill areas</li>
+      <li><a href="https://www.mwis.org.uk/forecasts/scottish-highlands">Mountain Weather Information Service (MWIS)</a>: hill forecasts</li>
+      <li><a href="https://www.traffic.gov.scot/">Traffic Scotland</a>: road conditions and closures</li>
+      <li><a href="https://www.metoffice.gov.uk/weather/warnings-and-advice/uk-warnings">Met Office warnings</a>: official snow and ice warnings</li>
+      <li><a href="https://www.glenshee.co.uk/">Glenshee</a> and <a href="https://www.cairngormmountain.co.uk/">Cairngorm Mountain</a>: snow reports</li>
+    </ul>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script src="snow.js"></script>
+</body>
+</html>

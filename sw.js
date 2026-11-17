@@ -1,7 +1,7 @@
 // Fintry Weather Station service worker.
 // App shell: cached for instant start-up. Weather data: always network first.
-const CACHE = "fintry-shell-v1";
-const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
+const CACHE = "fintry-shell-v2";
+const SHELL = ["./", "index.html", "snow.html", "storms.html", "style.css", "common.js", "app.js", "snow.js", "storms.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
