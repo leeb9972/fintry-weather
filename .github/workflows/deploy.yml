@@ -1,0 +1,47 @@
+name: Deploy site
+
+# Deploys the website to GitHub Pages. Runs when code is pushed, and every time
+# Home Assistant sends fresh weather station readings (repository_dispatch).
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [station-update]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build station.json from Home Assistant readings
+        if: github.event_name == 'repository_dispatch'
+        env:
+          DATA: ${{ github.event.client_payload.data }}
+        run: node scripts/build-station.mjs
+
+      - name: Collect site files
+        run: |
+          mkdir _site
+          cp index.html snow.html storms.html style.css common.js app.js snow.js storms.js sw.js manifest.webmanifest station.json _site/
+          cp -r icons _site/
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
