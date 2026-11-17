@@ -97,7 +97,7 @@ function render(s, om, met) {
   $("ingredients").innerHTML = [
     stat(f(capeMax24, 0, " J/kg"), "Peak CAPE, next 24 h"),
     stat(f(capeMax48, 0, " J/kg"), "Peak CAPE, next 48 h"),
-    stat(f(liMin, 1), "Lowest lifted index, 24 h"),
+    ...(Number.isFinite(liMin) ? [stat(f(liMin, 1), "Lowest lifted index, 24 h")] : []),
     stat(f(shearMax, 0, " m/s"), "Peak shear (est.), 24 h"),
     stat(`${metThunder24.length} h`, "Thunder hours, 24 h (MET Norway)"),
     stat(`${i24.filter((i) => h.weather_code[i] >= 95).length} h`, "Thunder hours, 24 h (Open-Meteo)"),
@@ -122,6 +122,7 @@ function render(s, om, met) {
 
   // Chaser table (3-hourly)
   const metAt = (ms) => steps.find((x) => Math.abs(new Date(x.time).getTime() - ms) < 1800e3);
+  const hasLI = i48.some((i) => h.lifted_index[i] != null);
   const rows = i48.filter((_, k) => k % 3 === 0).map((i) => {
     const ms = h.time[i] * 1000, cape = h.cape[i] ?? 0, sh = shear(h, i), m = metAt(ms);
     const th = (m && m.kind === "thunder") || h.weather_code[i] >= 95;
@@ -129,10 +130,10 @@ function render(s, om, met) {
     if (th && cape >= 1000) { rate = sh >= 15 ? "Organised storms possible" : "Strong storms possible"; c = "bad"; }
     else if (th) { rate = "Thunder possible"; c = "warn"; }
     else if (cape >= 500) { rate = "Showers could turn thundery"; c = "warn"; }
-    return `<tr><td>${fmtTime(ms)}</td><td>${Math.round(cape)}</td><td>${h.lifted_index[i] != null ? h.lifted_index[i].toFixed(1) : "–"}</td><td>${sh != null ? sh.toFixed(0) + " m/s" : "–"}</td>
+    return `<tr><td>${fmtTime(ms)}</td><td>${Math.round(cape)}</td>${hasLI ? `<td>${h.lifted_index[i] != null ? h.lifted_index[i].toFixed(1) : "–"}</td>` : ""}<td>${sh != null ? sh.toFixed(0) + " m/s" : "–"}</td>
       <td>${Math.round(h.wind_gusts_10m[i] ?? 0)} mph</td><td>${m ? m.icon + " " + m.label : "–"}</td><td class="${c}">${rate}</td></tr>`;
   }).join("");
-  $("chaser").innerHTML = "<thead><tr><th>Time</th><th>CAPE</th><th>Lifted index</th><th>Shear</th><th>Gusts</th><th>MET Norway</th><th>Outlook</th></tr></thead><tbody>" + rows + "</tbody>";
+  $("chaser").innerHTML = `<thead><tr><th>Time</th><th>CAPE</th>${hasLI ? "<th>Lifted index</th>" : ""}<th>Shear</th><th>Gusts</th><th>MET Norway</th><th>Outlook</th></tr></thead><tbody>` + rows + "</tbody>";
 }
 
 function pick(i) {
