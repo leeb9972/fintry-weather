@@ -1,10 +1,10 @@
 // Fintry Weather Station service worker.
 // App shell: cached for instant start-up. Weather data: always network first.
-const CACHE = "fintry-shell-v4";
+const CACHE = "fintry-shell-v5";
 const SHELL = ["./", "index.html", "snow.html", "storms.html", "history.html", "style.css", "common.js", "app.js", "snow.js", "storms.js", "history.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (e) => {
@@ -24,7 +24,14 @@ self.addEventListener("fetch", (e) => {
       .catch(() => caches.match(req)));
     return;
   }
-  // Everything else: show the cached copy now, refresh it in the background.
+  // Pages, scripts and styles: network first (revalidated), so a new release is never mixed with old files.
+  // The cached copy is only used offline.
+  if (url.origin === location.origin && (/\.(html|js|css)$/.test(url.pathname) || url.pathname.endsWith("/"))) {
+    e.respondWith(fetch(req, { cache: "no-cache" }).then((r) => { if (r.ok) { const c = r.clone(); caches.open(CACHE).then((x) => x.put(req, c)); } return r; })
+      .catch(() => caches.match(req, { ignoreSearch: true })));
+    return;
+  }
+  // Everything else (icons, map library): show the cached copy now, refresh it in the background.
   e.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => {
     const net = fetch(req).then((r) => { if (r.ok) { const c = r.clone(); caches.open(CACHE).then((x) => x.put(req, c)); } return r; }).catch(() => hit);
     return hit || net;
