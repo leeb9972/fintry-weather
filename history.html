@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather History – Fintry Weather Station</title>
+<meta name="description" content="History of temperature, wind, pressure, humidity and rainfall recorded by the Fintry weather station in Dundee.">
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0065bd">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Weather history</h1>
+    <p>Temperature, wind, pressure, humidity and rainfall recorded by the Fintry weather station. Hover or tap a chart to read off exact values.</p>
+    <div class="picker" id="ranges" role="tablist" aria-label="Choose a time period"></div>
+  </section>
+
+  <section id="summary" class="card"><div class="loading">Loading history…</div></section>
+
+  <section class="card"><h2>Temperature <span class="sub" id="tempSub"></span></h2><div id="cTemp"></div></section>
+  <section class="card"><h2>Wind <span class="sub">average and gusts</span></h2><div id="cWind"></div></section>
+  <section class="card"><h2>Rainfall <span class="sub" id="rainSub"></span></h2><div id="cRain"></div></section>
+  <section class="card"><h2>Pressure</h2><div id="cPress"></div></section>
+  <section class="card"><h2>Humidity</h2><div id="cHum"></div></section>
+
+  <section class="card">
+    <h2>Daily summary</h2>
+    <div class="tablewrap"><table id="dailyTable"></table></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="common.js"></script>
+<script src="history.js"></script>
+<script data-goatcounter="https://fintryweather.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

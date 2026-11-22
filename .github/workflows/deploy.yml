@@ -33,10 +33,29 @@ jobs:
           DATA: ${{ github.event.client_payload.data }}
         run: node scripts/build-station.mjs
 
+      # history.json lives on the deployed site. Pull the live copy so each deployment extends it;
+      # the copy committed to the repo is only the starting point (used while the site has none).
+      - name: Carry over history from the live site
+        run: |
+          code=$(curl -s -o live-history.json -w "%{http_code}" "https://leeb9972.github.io/fintry-weather/history.json?t=$(date +%s)")
+          if [ "$code" = "200" ] && node -e 'const h=JSON.parse(require("fs").readFileSync("live-history.json"));if(!Array.isArray(h.rows)||h.rows.length<1)process.exit(1)'; then
+            cp live-history.json history.json
+            echo "Using live history"
+          elif [ "$code" = "404" ]; then
+            echo "No live history yet, using the committed copy"
+          else
+            echo "Could not fetch live history (HTTP $code). Stopping so history is not lost."
+            exit 1
+          fi
+
+      - name: Add the latest reading to history
+        if: github.event_name == 'repository_dispatch'
+        run: node scripts/update-history.mjs station.json history.json
+
       - name: Collect site files
         run: |
           mkdir _site
-          cp index.html snow.html storms.html style.css common.js app.js snow.js storms.js sw.js manifest.webmanifest station.json _site/
+          cp index.html snow.html storms.html history.html style.css common.js app.js snow.js storms.js history.js sw.js manifest.webmanifest station.json history.json _site/
           cp -r icons _site/
 
       - uses: actions/configure-pages@v5

@@ -219,7 +219,33 @@ function togglePlay() {
   timer = setTimeout(step, 600);
 }
 
+// Station history card: last 24 hours / 7 days / 30 days of one measurement
+async function initHistory() {
+  const rows = await loadHistory();
+  if (!rows || !rows.length) return; // card stays hidden
+  const metrics = Object.keys(HIST_METRICS), ranges = [["24 hours", 1], ["7 days", 7], ["30 days", 30]];
+  let metric = "temp", range = 0;
+  const draw = () => {
+    const last = rows.at(-1).t + HOUR, data = rows.filter((r) => r.t >= last - ranges[range][1] * DAY);
+    // 30 days is a lot of hourly points: use daily values there
+    const daily = ranges[range][1] > 7, d = daily ? historyByDay(data) : data;
+    histChart($("histChart"), metricSeries(metric, d, daily), { unit: HIST_METRICS[metric].unit, dec: HIST_METRICS[metric].dec });
+  };
+  const chips = () => {
+    $("histMetric").innerHTML = metrics.map((k) => `<button type="button" data-m="${k}" class="${k === metric ? "on" : ""}">${HIST_METRICS[k].label}</button>`).join("") +
+      '<span class="gap"></span>' + ranges.map((r, i) => `<button type="button" data-r="${i}" class="${i === range ? "on" : ""}">${r[0]}</button>`).join("");
+  };
+  $("histMetric").onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.m) metric = b.dataset.m; else range = Number(b.dataset.r);
+    chips(); draw();
+  };
+  $("hist").hidden = false;
+  chips(); draw();
+}
+
 renderChrome("now");
+initHistory();
 buildPicker();
 loadPlace();
 loadOverview();
