@@ -37,7 +37,7 @@ jobs:
       # the copy committed to the repo is only the starting point (used while the site has none).
       - name: Carry over history from the live site
         run: |
-          code=$(curl -s --retry 5 --retry-delay 10 --retry-all-errors -o live-history.json -w "%{http_code}""https://leeb9972.github.io/fintry-weather/history.json?t=$(date +%s)")
+          code=$(curl -s --retry 5 --retry-delay 10 --retry-all-errors -o live-history.json -w "%{http_code}" "https://leeb9972.github.io/fintry-weather/history.json?t=$(date +%s)")
           if [ "$code" = "200" ] && node -e 'const h=JSON.parse(require("fs").readFileSync("live-history.json"));if(!Array.isArray(h.rows)||h.rows.length<1)process.exit(1)'; then
             cp live-history.json history.json
             echo "Using live history"
